@@ -51,8 +51,8 @@ tickClock PROC C clock:PTR BYTE
 L1:
 	mov al, [esi]
 	mov bl, [esi]
-	and al, 11110000b		; keep upper half in case
-	and bl, 00001111b		; keep lower half
+	and al, 11110000b			; keep upper half in case
+	and bl, 00001111b			; keep lower half
 	inc bl					
 	cmp ecx, 1				; check if in hour index,
 	je hour					;   if yes, go to hour loop
@@ -61,7 +61,7 @@ L1:
 	shr al, 4				; if above, shift and inc 
 	inc al					;   the upper half
 	cmp al, 6				; if upper half < 6
-	jb almostDone			;   store upper half
+	jb almostDone				;   store upper half
 	mov dl, 0				; else store 0 and do it again
 	mov [esi], dl 
 	dec esi
@@ -78,7 +78,7 @@ hour:
 	cmp bl, 3
 	je finish				; if 13, change to 1 by storing the 1 only
 	shl al, 4				; else keep upper half and
-	mov edi, clock			; check for am/pm
+	mov edi, clock				; check for am/pm
 	mov dl, [edi+3]
 	cmp dl, 50h
 	je am					; if pm, change to am
@@ -98,7 +98,7 @@ almostDone:
 done:
 	or al, bl				; combine 2 digits
 finish:
-	mov [esi], al			; store the value
+	mov [esi], al				; store the value
 	popad
 	ret
 tickClock ENDP
@@ -109,14 +109,14 @@ getCurrentTime PROC C, time:PTR BYTE
 	mov edx, 0
 	mov esi, time
 	mov al, 41h
-	mov [esi+8], al			; store AM 1st
+	mov [esi+8], al				; store AM 1st
 	
 	
-	call getMseconds		; get current time
-	mov ebx, 1000			; get ricks of milli seconds
+	call getMseconds			; get current time
+	mov ebx, 1000				; get ricks of milli seconds
 	div ebx
 	mov edx, 0
-	mov ebx, 3600			; eax = hour, edx = min+sec
+	mov ebx, 3600				; eax = hour, edx = min+sec
 	div ebx	
 	cmp al, 10				; hr < 10, store it
 	jb l1
@@ -130,32 +130,32 @@ L2:
 L1:
 	mov bl, 0				; store leading 0
 	mov [esi], bl
-	mov [esi + 1], al		; store lower half
+	mov [esi + 1], al			; store lower half
 	jmp next
 L3:
 	push edx				; save min/sec
 	mov bl, 10				; slit two digits
 	div bl					
-	mov [esi], al			; store upper half
-	mov [esi + 1], ah		; store lower half
+	mov [esi], al				; store upper half
+	mov [esi + 1], ah			; store lower half
 	pop edx					; restore min/sec
 next:
-	mov eax, edx			; get min/sex
+	mov eax, edx				; get min/sex
 	mov ebx, 60		
 	mov edx, 0	
 	div ebx					; eax = min, edx = sec
 
 	mov bl, 10				; split two digits
 	div bl					
-	mov [esi + 3], al		; store upper digit
-	mov [esi + 4], ah		; store lower digit	
+	mov [esi + 3], al			; store upper digit
+	mov [esi + 4], ah			; store lower digit	
 
-	mov eax, edx			; get sec
+	mov eax, edx				; get sec
 	mov bl, 10				; split two digit
 	mov ah, 0
 	div bl		
-	mov [esi + 6], al		; store upper digit
-	mov [esi + 7], ah		; store lower digit
+	mov [esi + 6], al			; store upper digit
+	mov [esi + 7], ah			; store lower digit
 
 	mov eax, 0
 	mov esi, time
